@@ -131,7 +131,7 @@ impl<'a> Lexer<'a> {
                     self.handle_identifier();
                 } else {
                     self.add_token_with_lexeme(TokenType::Unknown);
-                    utils::error(self.line, &format!("Carácter no esperado {}", c));
+                    utils::error(self.line, &format!("Carácter no esperado {c}"));
                 }
             }
         }

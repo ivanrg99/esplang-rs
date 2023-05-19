@@ -1,5 +1,7 @@
+use std::ops::Deref;
 use crate::token::Token;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum Expr {
     Binary(BinaryExpr),
@@ -8,6 +10,7 @@ pub enum Expr {
     Unary(UnaryExpr),
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct BinaryExpr {
     left: Box<Expr>,
@@ -15,16 +18,19 @@ pub struct BinaryExpr {
     operator: Token,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct GroupingExpr {
     expression: Box<Expr>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct LiteralExpr {
     value: Token,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct UnaryExpr {
     operator: Token,
@@ -45,16 +51,28 @@ impl GroupingExpr {
     pub fn new(expression: Box<Expr>) -> Self {
         Self { expression }
     }
+    pub fn expression(&self) -> &Expr {
+        self.expression.deref()
+    }
 }
 
 impl LiteralExpr {
     pub fn new(value: Token) -> Self {
         Self { value }
     }
+    pub fn value(&self) -> &Token {
+        &self.value
+    }
 }
 
 impl UnaryExpr {
     pub fn new(operator: Token, right: Box<Expr>) -> Self {
         Self { operator, right }
+    }
+    pub fn right(&self) -> &Expr {
+        self.right.deref()
+    }
+    pub fn operator(&self) -> &Token {
+        &self.operator
     }
 }

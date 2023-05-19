@@ -6,7 +6,7 @@ pub enum Error {
 }
 
 fn report(line: u32, what: &str, message: &str) {
-    println!("[Línea {}] Error {}: {}", line, what, message);
+    println!("[Línea {line}] Error {what}: {message}");
 }
 
 pub fn error(line: u32, message: &str) {

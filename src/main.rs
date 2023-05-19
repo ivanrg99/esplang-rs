@@ -25,7 +25,7 @@ mod token;
 mod utils;
 
 fn run(src: &str) -> Result<(), &str> {
-    println!("RUNNING: {}", src);
+    println!("RUNNING: {src}");
     let mut lex = Lexer::new(src.to_string());
 
     lex.scan_tokens();
@@ -39,7 +39,7 @@ fn run(src: &str) -> Result<(), &str> {
     let mut parser = Parser::new(tokens);
     let expression = parser.parse();
 
-    println!("\n\n ============== \n{:#?}", expression);
+    println!("\n\n ============== \n{expression:#?}");
 
     Ok(())
 }
@@ -48,7 +48,7 @@ fn run_file(path: &str) {
     let contents = fs::read_to_string(path);
     let contents = contents.map_or_else(
         |_| {
-            println!("Error al abrir el archivo {}", path);
+            println!("Error al abrir el archivo {path}");
             exit(1);
         },
         |e| e,
@@ -63,7 +63,7 @@ fn run_repl() {
     loop {
         let mut input = String::new();
         print!("EspLox> ");
-        std::io::stdout()
+        io::stdout()
             .flush()
             .expect("Error a la hora de \"flushear\" stdout");
         io::stdin()

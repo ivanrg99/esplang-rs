@@ -12,22 +12,22 @@ pub struct Parser {
 impl Parser {
     pub fn new(tokens: Vec<Token>) -> Self {
         Self {
-            tokens: tokens,
+            tokens,
             current: 0,
         }
     }
 
     pub fn parse(&mut self) -> Box<Expr> {
-        self.expression().unwrap()
+        self.expression()
     }
 
     /* The next functions match expressions based on precedence (lowest first) */
 
-    fn expression(&mut self) -> Result<Box<Expr>, utils::Error> {
-        Ok(self.equality()?)
+    fn expression(&mut self) -> Box<Expr> {
+        self.equality()
     }
 
-    fn equality(&mut self) -> Result<Box<Expr>, utils::Error> {
+    fn equality(&mut self) -> Box<Expr> {
         let mut expr = self.comparison();
 
         // We use a while because we can have more complex equalities
@@ -37,7 +37,7 @@ impl Parser {
             let right = self.comparison();
             expr = Box::new(Expr::Binary(BinaryExpr::new(expr, right, operator.clone())));
         }
-        Ok(expr)
+        expr
     }
 
     fn comparison(&mut self) -> Box<Expr> {
@@ -85,7 +85,7 @@ impl Parser {
     }
 
     fn unary(&mut self) -> Box<Expr> {
-        while self.match_type(&[TokenType::Bang, TokenType::Minus]) {
+        if self.match_type(&[TokenType::Bang, TokenType::Minus]) {
             //let right = self.unary();
             let operator = self.previous().clone();
             let right = self.unary();
@@ -93,12 +93,13 @@ impl Parser {
             return Box::new(Expr::Unary(UnaryExpr::new(operator.clone(), right)));
         }
 
+
         //Fix this, do not unwrap. Handle properly
         self.primary().unwrap()
     }
 
     //Ugly, refactor this. So far, only primary gets an error and it never gets handled up the chain (unary just unwraps)
-    fn primary(&mut self) -> Result<Box<Expr>, utils::Error> {
+    fn primary(&mut self) -> Result<Box<Expr>, Error> {
         if self.match_type(&[
             TokenType::False,
             TokenType::True,
@@ -113,7 +114,7 @@ impl Parser {
             let expr = self.expression();
             // Fix this and handle error
             let _ = self.consume(TokenType::RightParen, "Se necesita cerrar el paréntesis");
-            Ok(Box::new(Expr::Grouping(GroupingExpr::new(expr?))))
+            Ok(Box::new(Expr::Grouping(GroupingExpr::new(expr))))
         } else {
             Err(self.parse_error(self.peek(), "Se esperaba una expresión"))
         }
@@ -121,7 +122,7 @@ impl Parser {
 
     /* ****************************************************** */
 
-    fn consume(&mut self, kind: TokenType, msg: &str) -> Result<&Token, utils::Error> {
+    fn consume(&mut self, kind: TokenType, msg: &str) -> Result<&Token, Error> {
         if self.check(kind) {
             Ok(self.advance())
         } else {
@@ -129,7 +130,7 @@ impl Parser {
         }
     }
 
-    fn parse_error(&self, token: &Token, msg: &str) -> utils::Error {
+    fn parse_error(&self, token: &Token, msg: &str) -> Error {
         utils::error_parse(token, msg);
         Error::ParsingError
     }
